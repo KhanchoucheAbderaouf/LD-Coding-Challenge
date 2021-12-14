@@ -4,6 +4,8 @@ require("dotenv").config();
 const cors = require('cors');
 const app = express().use('*', cors());
 var compression = require('compression')
+const connectDB = require("./configs/db");
+
 
 app.use(compression())
 
@@ -19,6 +21,9 @@ app.use(express.urlencoded({ extended: false }))
 
 // parse application/json
 app.use(express.json())
+
+//mongoose connection 
+connectDB();
 
 const port = process.env.PORT || 4000;
 app.listen(port, () => {
