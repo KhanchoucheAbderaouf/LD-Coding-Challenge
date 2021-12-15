@@ -6,7 +6,6 @@ const app = express().use('*', cors());
 var compression = require('compression')
 const connectDB = require("./configs/db");
 
-
 app.use(compression())
 
 app.get('/', (req, res) => {
@@ -22,8 +21,12 @@ app.use(express.urlencoded({ extended: false }))
 // parse application/json
 app.use(express.json())
 
-//mongoose connection 
+//connection to the database
 connectDB();
+
+//Routes
+const routes = require("./src/routes/text.router");
+app.use("/text", routes);
 
 const port = process.env.PORT || 4000;
 app.listen(port, () => {
