@@ -1,3 +1,4 @@
+//Define different endpoints for the texts
 const router = require("express").Router();
 
 const {

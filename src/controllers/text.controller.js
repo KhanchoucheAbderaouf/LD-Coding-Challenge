@@ -17,6 +17,7 @@ const getTexts = async (req, res) => {
         //find all texts with pagination
         await Text.find().limit(size).skip((page - 1) * size).then(async (texts) => {
             if (texts) {
+                //define result variable just to structure the return response
                 let result = {}
                 result.data = texts
                 result.all_elements = await Text.count({})
@@ -162,6 +163,7 @@ const submitText = async (req, res) => {
     try {
         //find by id and change the state to submitted only if the state is different than approved
         await Text.findById(req.params.id).then((text) => {
+            //the case it is approved
             if (text.state === "Approved") {
                 return res.status(403).json({
                     "error": "Cannot change state to Subbmitted! the Text is already Approved"
@@ -185,10 +187,12 @@ const approveText = async (req, res) => {
     try {
         //find by id and change the state to approved only if the state is submitted
         await Text.findById(req.params.id).then((text) => {
+            //the case it is already approved
             if (text.state === "Approved") {
                 return res.status(403).json({
                     "error": "the Text is already Approved!"
                 })
+                //the case it is not submitted
             } else if (text.state !== "Submitted") {
                 return res.status(403).json({
                     "error": "Cannot change state to Approved! the Text is not Submitted"
@@ -211,6 +215,7 @@ const rejectText = async (req, res) => {
     try {
         //find by id and change the state rejected only if the state is submitted
         await Text.findById(req.params.id).then((text) => {
+            //the case it is not submitted
             if (text.state !== "Submitted") {
                 return res.status(403).json({
                     "error": "Cannot change state to Rejected! the Text is not Submitted"
@@ -275,12 +280,15 @@ const searchTextByQuery = async (req, res) => {
         //     $or:[ 
         //         {"english": {
         //             $regex: '.*' + req.query.q + '.*'
+        //             $options: 'i'
         //         }},
         //         {"french": {
         //             $regex: '.*' + req.query.q + '.*'
+        //             $options: 'i'
         //         }},
         //         {"arabic": {
         //             $regex: '.*' + req.query.q + '.*'
+        //             $options: 'i'
         //         }}
         //       ]})).map(elem => elem = elem.english)
 

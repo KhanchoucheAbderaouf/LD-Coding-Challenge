@@ -5,6 +5,7 @@ const app = express().use("*", cors());
 var compression = require("compression");
 const connectDB = require("./configs/db");
 
+//to compress response bodies
 app.use(compression());
 
 app.get("/", (req, res) => {
@@ -15,11 +16,7 @@ app.get("/", (req, res) => {
 });
 
 // parse application/x-www-form-urlencoded
-app.use(
-    express.urlencoded({
-        extended: false,
-    })
-);
+app.use(express.urlencoded({extended: false}));
 
 // parse application/json
 app.use(express.json());
