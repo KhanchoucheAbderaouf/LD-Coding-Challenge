@@ -8,21 +8,6 @@ A Coding Challenge for text storing and processing
 - MongoDB.
 - Jest
 
-## Repository overview
-
-Provide an overview of the directory structure and files, for example:
-
-├── README.md
-├── configs
-├── app.js
-├── package.json
-├── src
-│   ├── controllers
-│   ├── models
-│   ├── routes
-│   └── services
-└── tests
-
 ## Running instructions
 
 - Developement : 
