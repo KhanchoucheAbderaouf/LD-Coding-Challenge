@@ -15,9 +15,14 @@ const getTexts = async (req, res) => {
         //define the page to get
         const page = req.query.page ? parseInt(req.query.page) : 1;
         //find all texts with pagination
-        await Text.find().limit(size).skip((page - 1) * size).then((texts) => {
+        await Text.find().limit(size).skip((page - 1) * size).then(async (texts) => {
             if (texts) {
-                return res.json(texts);
+                let result = {}
+                result.data = texts
+                result.all_elements = await Text.count({})
+                result.pages = Math.ceil(result.all_elements / size)
+                result.current_page = page
+                return res.json(result);
             } else {
                 return res.status(404).json({
                     "error": "Texts not found"
@@ -25,7 +30,7 @@ const getTexts = async (req, res) => {
             }
         })
     } catch (error) {
-        res.status(500).send(Error);
+        res.status(500).send(error);
     }
 };
 
@@ -77,10 +82,14 @@ const countTextWordsByID = async (req, res) => {
         //find the text by it's id first and then update the text in different language
         await Text.findById(req.params.id).then((text) => {
             if (text) {
+                const english = text.english ? text.english.split(' ').length : 0
+                const french = text.french ? text.french.split(' ').length : 0
+                const arabic = text.arabic ? text.arabic.split(' ').length : 0
                 return res.json({
-                    english: text.english ? text.english.split(' ').length : undefined,
-                    french: text.french ? text.french.split(' ').length : undefined,
-                    arabic: text.arabic ? text.arabic.split(' ').length : undefined,
+                    english: english,
+                    french: french,
+                    arabic: arabic,
+                    total: english + french + arabic
                 })
             } else {
                 return res.status(404).json({
@@ -123,12 +132,12 @@ const mostOccurrentWord = async (req, res) => {
     try {
         await Text.find().then(async (texts) => {
             if (texts) {
-                //call the most occurences function for a specific language
+                //call the most occurences function for a specific language (in case we wanna get only a specific language)
                 const english = await maxOccurencesCount(texts, 'english')
                 const french = await maxOccurencesCount(texts, 'french')
                 const arabic = await maxOccurencesCount(texts, 'arabic')
 
-                //call the most occurences function for all languages
+                //call the most occurences function for all languages (in case we wanna get all in one)
                 const allLanguages = await maxOccurencesCountForAll(texts, 'arabic')
 
                 return res.json({
@@ -151,7 +160,7 @@ const mostOccurrentWord = async (req, res) => {
 //submit the text
 const submitText = async (req, res) => {
     try {
-        //find by id and change the state only if the state is different than approved
+        //find by id and change the state to submitted only if the state is different than approved
         await Text.findById(req.params.id).then((text) => {
             if (text.state === "Approved") {
                 return res.status(403).json({
@@ -174,7 +183,7 @@ const submitText = async (req, res) => {
 //approve the text
 const approveText = async (req, res) => {
     try {
-        //find by id and change the state only if the state is submitted
+        //find by id and change the state to approved only if the state is submitted
         await Text.findById(req.params.id).then((text) => {
             if (text.state !== "Submitted") {
                 return res.status(403).json({
@@ -196,7 +205,7 @@ const approveText = async (req, res) => {
 //reject the text
 const rejectText = async (req, res) => {
     try {
-        //find by id and change the state only if the state is submitted
+        //find by id and change the state rejected only if the state is submitted
         await Text.findById(req.params.id).then((text) => {
             if (text.state !== "Submitted") {
                 return res.status(403).json({
@@ -215,7 +224,6 @@ const rejectText = async (req, res) => {
         return res.status(500).json(error);
     }
 };
-//find({"name": /.*m.*/})
 
 //fuzzy search 
 const searchTextByQuery = async (req, res) => {
@@ -229,26 +237,33 @@ const searchTextByQuery = async (req, res) => {
         await Text.find({
             $or: [{
                     "english": {
-                        $regex: '.*' + req.query.q + '.*'
+                        $regex: '.*' + req.query.q + '.*',
+                        $options: 'i'
                     }
                 },
                 {
                     "french": {
-                        $regex: '.*' + req.query.q + '.*'
+                        $regex: '.*' + req.query.q + '.*',
+                        $options: 'i'
                     }
                 },
                 {
                     "arabic": {
-                        $regex: '.*' + req.query.q + '.*'
+                        $regex: '.*' + req.query.q + '.*',
+                        $options: 'i'
                     }
                 }
             ]
         }).then((result) => {
-            if (result) {
+            if (result.length !== 0) {
                 return res.json(result)
             } else {
                 return res.status(404).json("No Result Found")
             }
+        }).catch((error) => {
+            return res.json({
+                error: error
+            })
         })
 
         //get texts and map it to get only the strings instead of all the object(example in case of looking for strings only)
@@ -266,7 +281,7 @@ const searchTextByQuery = async (req, res) => {
         //       ]})).map(elem => elem = elem.english)
 
     } catch (error) {
-        res.status(500).send(Error);
+        res.status(500).send(error);
     }
 };
 

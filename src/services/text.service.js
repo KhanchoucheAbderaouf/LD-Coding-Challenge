@@ -24,12 +24,12 @@ const maxOccurencesCount = (array, language) => {
     let result = []
     for (const [key, value] of Object.entries(counts)) {
         if (max < value) {
-            max = value,
-                result = []
+            max = value
+            result = []
             result.push(key)
         } else if (max === value) {
-            max = value,
-                result.push(key)
+            max = value
+            result.push(key)
         }
     }
     return result;
@@ -39,7 +39,7 @@ const maxOccurencesCount = (array, language) => {
 const maxOccurencesCountForAll = (array) => {
 
     var global_array = []
-    //put all the found texts of all languagese in one array
+    //put all the found texts of all languages in one array
     for (const element of array) {
         if (element.arabic) {
             global_array = global_array.concat(element.arabic.replace(/[,:;./]/g, '').split(" "))
