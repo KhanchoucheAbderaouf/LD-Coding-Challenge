@@ -185,7 +185,11 @@ const approveText = async (req, res) => {
     try {
         //find by id and change the state to approved only if the state is submitted
         await Text.findById(req.params.id).then((text) => {
-            if (text.state !== "Submitted") {
+            if (text.state === "Approved") {
+                return res.status(403).json({
+                    "error": "the Text is already Approved!"
+                })
+            } else if (text.state !== "Submitted") {
                 return res.status(403).json({
                     "error": "Cannot change state to Approved! the Text is not Submitted"
                 })

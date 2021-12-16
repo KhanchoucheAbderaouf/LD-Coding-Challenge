@@ -16,13 +16,13 @@ const {
 router.get("/", getTexts);
 router.get("/:id/count", countTextWordsByID);
 router.get("/:id/count/:language", countTextWordsByIDAndLanguage);
-router.get("/:id/approve", approveText);
-router.get("/:id/submit", submitText);
-router.get("/:id/reject", rejectText);
 router.get("/mostOccurrent", mostOccurrentWord);
 router.post("/", createText);
 router.post("/search", searchTextByQuery);
 router.put("/:id", updateText);
+router.put("/:id/approve", approveText);
+router.put("/:id/submit", submitText);
+router.put("/:id/reject", rejectText);
 
 
 module.exports = router;
