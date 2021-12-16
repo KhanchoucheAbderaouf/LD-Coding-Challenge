@@ -252,9 +252,9 @@ describe("get the most occurent word in the whole database", () => {
     })
 
     //test the process from draft to approve : draft -> submitted -> rejected -> submitted -> approved
-    
     //NOTE : Just took an example of a text that starts from draft state after executing the test changes will happen to the 
     // text so the text can't be retested until the state change back to draft
+
     //first submit
     test("response state should be submit", async () => {
         const submit = await request(app).get("/text/61bb3ba496dc99863a32d957/submit")

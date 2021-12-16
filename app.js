@@ -1,25 +1,28 @@
-const express = require('express')
-const path = require('path')
+const express = require("express");
 require("dotenv").config();
-const cors = require('cors');
-const app = express().use('*', cors());
-var compression = require('compression')
+const cors = require("cors");
+const app = express().use("*", cors());
+var compression = require("compression");
 const connectDB = require("./configs/db");
 
-app.use(compression())
+app.use(compression());
 
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
     return res.json({
-        status: 'Working',
+        status: "Working",
         name: "LD Coding Challenge",
     });
 });
 
 // parse application/x-www-form-urlencoded
-app.use(express.urlencoded({ extended: false }))
+app.use(
+    express.urlencoded({
+        extended: false,
+    })
+);
 
 // parse application/json
-app.use(express.json())
+app.use(express.json());
 
 //connection to the database
 connectDB();
@@ -28,7 +31,7 @@ connectDB();
 const routes = require("./src/routes/text.router");
 app.use("/text", routes);
 
-module.exports = app
+module.exports = app;
 
 const port = process.env.PORT || 4000;
 app.listen(port, () => {
